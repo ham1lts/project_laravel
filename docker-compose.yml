@@ -1,0 +1,41 @@
+version: '3.8'
+
+name: web_service
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: web_service_backend
+        environment:
+            DB_CONNECTION: mysql
+            DB_HOST: db
+            DB_PORT: 3306
+            DB_DATABASE: objective
+            DB_USERNAME: root
+            DB_PASSWORD: root
+        ports:
+            - "8000:80"
+        depends_on:
+            - db
+        networks:
+            - web_service_network
+        volumes:
+            - .:/app
+    db:
+        image: mysql:5.7
+        container_name: web_service_db
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: objective
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./mysql_data:/var/lib/mysql
+        networks:
+            - web_service_network
+
+networks:
+    web_service_network:
+        driver: bridge
