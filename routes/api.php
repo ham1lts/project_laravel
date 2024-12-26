@@ -22,4 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/conta', [AccountController::class, 'index'])->name('index');
 Route::post('/conta', [AccountController::class, 'store'])->name('store');
-Route::post('/transacao', [TransacaoController::class, 'update'])->name('update');
+Route::post('/transacao/{account}', [TransacaoController::class, 'update'])->name('update');
