@@ -21,6 +21,6 @@ class CheckAccount
             return $next($request);
         }
 
-        return response()->json(['Número de Conta inexistente'], Response::HTTP_NOT_FOUND);
+        return response()->json(['Account number not found'], Response::HTTP_NOT_FOUND);
     }
 }

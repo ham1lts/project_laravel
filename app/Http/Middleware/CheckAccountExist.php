@@ -14,7 +14,7 @@ class CheckAccountExist
     {
         $accountRepository = app(AccountRepositoryInterface::class);
         if ($accountRepository->getByAccountNumber($request->numero_conta)) {
-            return response()->json(['Conta Já Existente'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['Existing Account'], Response::HTTP_BAD_REQUEST);
         }
 
         return $next($request);
