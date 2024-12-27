@@ -1,14 +1,13 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Bank;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Interfaces\Bank\Data\AccountInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class Account extends Model
+class Account extends Model implements AccountInterface
 {
-    use HasFactory;
-
     public function setAccountNumber($accountNumber): void
     {
         $this->account_number = $accountNumber;

@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
+use App\Http\Requests\TransacaoRequest;
+use App\Interfaces\Bank\AccountRepositoryInterface;
+use App\Interfaces\Bank\Data\AccountInterface;
+use App\Models\Bank\Account;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,9 +18,11 @@ class TransacaoController extends Controller
         'P' => 0
     ];
 
-    public function update(Request $request, Account $account): Response
+    public function update(TransacaoRequest $transacaoRequest, AccountRepositoryInterface $accountRepository): Response
     {
-        $value = $request->valor * (1 + self::taxasTransacoes[$request->forma_pagamento]);
+        $account = $accountRepository->getByAccountNumber($transacaoRequest->numero_conta);
+        $value = $transacaoRequest->valor * (1 + self::taxasTransacoes[$transacaoRequest->forma_pagamento]);
+
         if ($value <= $account->getBalance()) {
             $account->setBalance($account->getBalance() - $value);
             $account->save();

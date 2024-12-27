@@ -1,19 +1,21 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
+use App\Http\Requests\AccountRequest;
+use App\Interfaces\Bank\AccountRepositoryInterface;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AccountController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get account by number
      */
-    public function index(Request $request)
+    public function index(Request $request, AccountRepositoryInterface $accountRepository): Response
     {
-        $account = Account::whereAccountNumber($request->get('numero_conta'))->first();
+        $account = $accountRepository->getByAccountNumber($request->get('numero_conta'));
         if (empty($account)) {
             return response()->json('Número de Conta inexistente');
         }
@@ -24,12 +26,9 @@ class AccountController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AccountRequest $accountRequest, AccountRepositoryInterface $accountRepository): Response
     {
-        $account = new Account();
-        $account->setBalance($request->saldo);
-        $account->setAccountNumber($request->numero_conta);
-        $account->save();
+        $account = $accountRepository->create($accountRequest);
 
         return response()->json(['success' => true, 'data' => $account], Response::HTTP_CREATED);
     }
