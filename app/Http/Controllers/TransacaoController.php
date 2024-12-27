@@ -21,7 +21,7 @@ class TransacaoController extends Controller
     public function update(TransacaoRequest $transacaoRequest, AccountRepositoryInterface $accountRepository): Response
     {
         $account = $accountRepository->getByAccountNumber($transacaoRequest->numero_conta);
-        $value = $transacaoRequest->valor * (1 + self::taxasTransacoes[$transacaoRequest->forma_pagamento]);
+        $value = round($transacaoRequest->valor * (1 + self::taxasTransacoes[$transacaoRequest->forma_pagamento]), 2);
 
         if ($value <= $account->getBalance()) {
             $account->setBalance($account->getBalance() - $value);
