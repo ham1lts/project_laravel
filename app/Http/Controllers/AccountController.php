@@ -1,34 +1,42 @@
 <?php
+/**
+ * Copyright © Freire H. All rights reserved.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AccountRequest;
-use App\Interfaces\Bank\AccountRepositoryInterface;
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AccountController extends Controller
 {
+    public function __construct(
+        private readonly AccountService $accountService,
+    ){}
+
     /**
      * Get account by number
      */
-    public function index(Request $request, AccountRepositoryInterface $accountRepository): Response
+    public function index(Request $request): Response
     {
-        $account = $accountRepository->getByAccountNumber($request->get('numero_conta'));
+        $account = $this->accountService->getAccount($request->get('numero_conta'));
 
-        return response()->json(["numero_conta" => $account->getAccountNumber(), "saldo" => $account->getBalance()]);
+        return response()->json(["numero_conta" => $account->account_number, "saldo" => $account->balance]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AccountRequest $accountRequest, AccountRepositoryInterface $accountRepository): Response
+    public function store(AccountRequest $accountRequest): Response
     {
-        $account = $accountRepository->create($accountRequest);
+        $account = $this->accountService->createAccount($accountRequest);
 
         return response()->json(
-            ["numero_conta" => $account->getAccountNumber(), "saldo" => $account->getBalance()],
+            ["numero_conta" => $account->account_number, "saldo" => $account->balance],
             Response::HTTP_CREATED
         );
     }

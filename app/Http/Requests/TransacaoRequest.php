@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright © Freire H. All rights reserved.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Requests;
@@ -6,6 +10,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
 
 class TransacaoRequest extends FormRequest
 {
@@ -27,9 +32,9 @@ class TransacaoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "forma_pagamento" => "required",
-            "numero_conta" => "required",
-            "valor" => "required"
+            "forma_pagamento" => "required|string|in:D,C,P",
+            "numero_conta" => "required|int",
+            "valor" => "required|numeric|min:0.01",
         ];
     }
 
@@ -38,8 +43,7 @@ class TransacaoRequest extends FormRequest
         throw new HttpResponseException (
             response()->json([
                 'success' => false,
-                'errors' => $validator->errors()->all(),
-                'messages' => "Dados inválidos."
-            ], 422));
+                'errors' => $validator->errors()->first(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
