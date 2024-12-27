@@ -16,9 +16,6 @@ class AccountController extends Controller
     public function index(Request $request, AccountRepositoryInterface $accountRepository): Response
     {
         $account = $accountRepository->getByAccountNumber($request->get('numero_conta'));
-        if (empty($account)) {
-            return response()->json('Número de Conta inexistente');
-        }
 
         return response()->json(["numero_conta" => $account->getAccountNumber(), "saldo" => $account->getBalance()]);
     }
@@ -30,6 +27,9 @@ class AccountController extends Controller
     {
         $account = $accountRepository->create($accountRequest);
 
-        return response()->json(['success' => true, 'data' => $account], Response::HTTP_CREATED);
+        return response()->json(
+            ["numero_conta" => $account->getAccountNumber(), "saldo" => $account->getBalance()],
+            Response::HTTP_CREATED
+        );
     }
 }
