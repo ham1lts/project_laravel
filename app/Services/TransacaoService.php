@@ -6,7 +6,7 @@
 namespace App\Services;
 
 use App\Interfaces\AccountRepositoryInterface;
-use App\Models\Account;
+use App\Interfaces\HistoryTransactionRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class TransacaoService
@@ -18,7 +18,8 @@ class TransacaoService
     ];
 
     public function __construct(
-        private readonly AccountRepositoryInterface $accountRepository
+        private readonly AccountRepositoryInterface $accountRepository,
+        private readonly HistoryTransactionRepositoryInterface $historyTransactionRepository
     ){}
 
     public function updateBalance($transacaoRequest): Response
@@ -29,6 +30,7 @@ class TransacaoService
         if ($value <= $account->balance) {
             $account->balance = $account->balance - $value;
             $this->accountRepository->save($account);
+            $this->saveHistoryTransaction($transacaoRequest, $value);
 
             return response()->json(
                 ["numero_conta" => $account->account_number, "saldo" => $account->balance],
@@ -37,5 +39,16 @@ class TransacaoService
         }
 
         return response()->json([], Response::HTTP_NOT_FOUND);
+    }
+
+    private function saveHistoryTransaction($transacaoRequest, $value)
+    {
+        $this->historyTransactionRepository->create(
+            [
+                'account_number' => $transacaoRequest->numero_conta,
+                'operation' => $transacaoRequest->forma_pagamento,
+                'value' => $value,
+            ]
+        );
     }
 }

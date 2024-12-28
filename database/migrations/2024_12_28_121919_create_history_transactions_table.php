@@ -12,12 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('history_transactions', function (Blueprint $table) {
             $table->id();
-            $table->integer('account_number')->unique();
-            $table->unsignedFloat('balance', 10)->default(0);
+            $table->integer('account_number');
+            $table->string('operation');
+            $table->unsignedFloat('value', 10);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'))->useCurrentOnUpdate();
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('history_transactions');
     }
 };
