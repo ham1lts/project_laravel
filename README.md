@@ -13,7 +13,7 @@
 1. Para rodar esse projeto basta executar esse comando dentro de uma pasta da sua escolha `git clone https://github.com/ham1lts/project_laravel.git`
 2. Copie o arquivo `.env.example` para o arquivo `.env` 
 3. Execute o comando `docker-compose build` e em seguida `docker-compose up -d`
-4. Execute o comando `php artisan migrate` para aplicar as mudanças no banco de dados.
+4. Execute o comando `docker exec web_service_backend php artisan migrate` para aplicar as mudanças no banco de dados.
 
 ## Case
 
@@ -33,20 +33,19 @@ As seguintes siglas devem ser usadas para as formas de pagamento:
     D: Cartão de Débito
 
 ### **POST /api/conta**
+#### Corpo da Requisição (Request Body)
+
 O corpo da requisição deve ser enviado no formato JSON e deve conter os seguintes parâmetros obrigatórios:
 
-- **forma_pagamento** (string, obrigatório): A forma de pagamento utilizada para a transação.  
-  **Exemplos**: `"P"` (Pix), `"C"` (Cartão de Crédito), `"D"` (Cartão de Débito).
-- **numero_conta** (número, obrigatório): O número da conta para a qual a transação será realizada.
-- **valor** (número, obrigatório): O valor da transação.
+- **numero_conta** (string, obrigatório): O número da conta a ser adicionada.
+- **saldo** (número, obrigatório): O saldo inicial da conta.
 
-#### Exemplo de Requisição
+#### Entrada (Body)
 
 ```json
 {
-  "forma_pagamento": "D",
-  "numero_conta": 254,
-  "valor": 50.00
+    "numero_conta": "254",
+    "saldo": 180.50
 }
 ```
 
@@ -59,7 +58,7 @@ Este endpoint recupera as informações de uma conta específica com base no nú
 
 #### Exemplo de Requisição
 
-```json
+```php
 curl -X GET "http://localhost:8000/api/conta?numero_conta=254"
 ```
 
@@ -70,15 +69,18 @@ Realização de uma transação financeira
 
 O corpo da requisição deve ser enviado no formato JSON e deve conter os seguintes parâmetros obrigatórios:
 
-- **numero_conta** (string, obrigatório): O número da conta a ser adicionada.
-- **saldo** (número, obrigatório): O saldo inicial da conta.
+- **forma_pagamento** (string, obrigatório): A forma de pagamento utilizada para a transação.  
+  **Exemplos**: `"P"` (Pix), `"C"` (Cartão de Crédito), `"D"` (Cartão de Débito).
+- **numero_conta** (número, obrigatório): O número da conta para a qual a transação será realizada.
+- **valor** (número, obrigatório): O valor da transação.
 
-#### Entrada (Body)
+#### Exemplo de Requisição
 
 ```json
 {
-  "numero_conta": "254",
-  "saldo": 180.50
+    "forma_pagamento": "D",
+    "numero_conta": 254,
+    "valor": 50.00
 }
 ```
 
