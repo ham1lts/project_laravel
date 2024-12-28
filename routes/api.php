@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TransacaoController;
+use App\Http\Middleware\CheckAccount;
+use App\Http\Middleware\CheckAccountExist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +22,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/conta', [AccountController::class, 'index'])->name('index');
-Route::post('/conta', [AccountController::class, 'store'])->name('store');
-Route::post('/transacao', [TransacaoController::class, 'update'])->name('update');
+Route::group(['prefix' => '/conta'], function () {
+    Route::get('/', [AccountController::class, 'index'])
+        ->middleware(CheckAccount::class);
+
+    Route::post('/', [AccountController::class, 'store'])
+        ->middleware(CheckAccountExist::class);
+});
+
+Route::post('/transacao', [TransacaoController::class, 'update'])->name('update')
+    ->middleware(CheckAccount::class);

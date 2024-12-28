@@ -1,66 +1,179 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Endpoints - Conta Bancária
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Esse repositório é um desafio técnico para vaga de Desenvolvedor Back-End PHP
 
-## About Laravel
+## Ambiente de desenvolvimento
+- Laravel 10.48
+- PHP 8.1
+- Mysql
+- Docker
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Instruções
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Para rodar esse projeto basta executar esse comando dentro de uma pasta da sua escolha `git clone https://github.com/ham1lts/project_laravel.git`
+2. Copie o arquivo `.env.example` para o arquivo `.env` 
+3. Execute o comando `docker-compose build` e em seguida `docker-compose up -d`
+4. Execute o comando `php artisan migrate` para aplicar as mudanças no banco de dados.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Case
 
-## Learning Laravel
+Desenvolva um sistema de gestão bancária utilizando uma API, composta por dois endpoints:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- `/conta`, que será responsável pela criação de contas e fornecimento de informações relacionadas ao número da conta;
+- `/transacao`, que deverá realizar operações financeiras.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Requisitos
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Padrões de Entrada e Saída dos Endpoints (Formato JSON)
 
-## Laravel Sponsors
+As seguintes siglas devem ser usadas para as formas de pagamento:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    P: Pix
+    C: Cartão de Crédito
+    D: Cartão de Débito
 
-### Premium Partners
+### **POST /api/conta**
+O corpo da requisição deve ser enviado no formato JSON e deve conter os seguintes parâmetros obrigatórios:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **forma_pagamento** (string, obrigatório): A forma de pagamento utilizada para a transação.  
+  **Exemplos**: `"P"` (Pix), `"C"` (Cartão de Crédito), `"D"` (Cartão de Débito).
+- **numero_conta** (número, obrigatório): O número da conta para a qual a transação será realizada.
+- **valor** (número, obrigatório): O valor da transação.
 
-## Contributing
+#### Exemplo de Requisição
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```json
+{
+  "forma_pagamento": "D",
+  "numero_conta": 254,
+  "valor": 50.00
+}
+```
 
-## Code of Conduct
+### **GET /api/conta**
+Este endpoint recupera as informações de uma conta específica com base no número da conta fornecido como parâmetro de consulta.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Parâmetros da Requisição
 
-## Security Vulnerabilities
+- **numero_conta** (parâmetro de consulta, obrigatório): O número da conta para a qual as informações devem ser recuperadas.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Exemplo de Requisição
 
-## License
+```json
+curl -X GET "http://localhost:8000/api/conta?numero_conta=254"
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### **POST /api/transacao**
+Realização de uma transação financeira
+
+#### Corpo da Requisição (Request Body)
+
+O corpo da requisição deve ser enviado no formato JSON e deve conter os seguintes parâmetros obrigatórios:
+
+- **numero_conta** (string, obrigatório): O número da conta a ser adicionada.
+- **saldo** (número, obrigatório): O saldo inicial da conta.
+
+#### Entrada (Body)
+
+```json
+{
+  "numero_conta": "254",
+  "saldo": 180.50
+}
+```
+
+> Casos de Teste
+>> `test_success_create_account` 
+>> 
+>> Objetivo: Validar a criação bem-sucedida de uma nova conta.
+>> 
+>> Comportamento Esperado: A conta deve ser criada com os dados fornecidos (número da conta e saldo) e o servidor deve retornar o status HTTP 201 Created.
+>> 
+>> Descrição: Esse teste cobre o caso onde os dados enviados são válidos e a conta é criada com sucesso.
+>
+>> `test_failed_account_creation_due_to_duplicate_account_number`
+>>
+>> Objetivo: Validar a falha na criação de uma conta devido à duplicidade no número da conta.
+>>
+>> Comportamento Esperado: Quando a tentativa de criar uma nova conta com um número de conta já existente for feita, a resposta deve ser 400 Bad Request, indicando que o número da conta é duplicado.
+>>
+>> Descrição: Esse teste cobre o cenário onde a criação de uma conta é solicitada, mas o número da conta já existe no banco de dados. Nesse caso, o sistema deve retornar um erro informando a duplicidade.
+ >
+>> `test_failed_account_creation_due_to_invalid_data`
+>>
+>> Objetivo: Validar a falha na criação de uma conta devido a dados inválidos fornecidos.
+>>
+>> Comportamento Esperado: Quando um número de conta inválido (não numérico) é fornecido, o servidor deve retornar o status HTTP 422 Unprocessable Entity, indicando que os dados são inválidos.
+>>
+>> Descrição: Esse teste cobre o caso onde os dados fornecidos para a criação da conta não atendem às validações esperadas (exemplo: o número da conta deve ser um número inteiro).
+> 
+>> `test_account_creation_with_invalid_fields`
+>>
+>> Objetivo: Validar a falha na criação de uma conta quando campos não esperados são fornecidos.
+>> 
+>>Comportamento Esperado: Se um campo desconhecido for incluído na solicitação, o servidor deve retornar o status 422 Unprocessable Entity indicando que o campo não é válido.
+>> 
+>>Descrição: Esse teste simula a inclusão de um campo aleatório (RANDOM_FIELD) que não existe no modelo da conta, o que deve resultar em um erro de validação.
+>
+>> `test_success_get_account_information`
+>>
+>> Objetivo: Validar a recuperação bem-sucedida das informações de uma conta.
+>> 
+>>Comportamento Esperado: A conta com o número 85596 deve ser recuperada com sucesso, e a resposta deve retornar os dados da conta (numero_conta e saldo) com o status 200 OK.
+>> 
+>>Descrição: Este teste valida o cenário em que uma solicitação GET é feita para recuperar as informações de uma conta existente.
+>
+>> `test_failed_get_account_information`
+>>
+>> Objetivo: Validar a falha na recuperação de informações de uma conta inexistente.
+>> 
+>>Comportamento Esperado: Quando a conta solicitada não existir, a API deve retornar o status HTTP 404 Not Found, indicando que a conta não foi encontrada.
+>> 
+>>Descrição: Esse teste cobre o caso onde uma solicitação é feita para recuperar informações de uma conta que não existe no sistema. O servidor deve retornar um erro 404.
+> 
+>> `test_success_transaction_debit_card`
+>> 
+>> Objetivo: Validar a transação bem-sucedida com pagamento via débito.
+>>
+>> Comportamento Esperado: A transação de débito deve ser processada com sucesso, descontando o valor correto da conta e retornando o status 201 Created.
+>>
+>> Descrição: Este teste cobre o cenário onde uma transação é feita usando a forma de pagamento débito ("D") para uma conta previamente criada com saldo suficiente.
+> 
+>> test_success_transaction_credit_card
+>>
+>> Objetivo: Validar a transação bem-sucedida com pagamento via crédito.
+>>
+>> Comportamento Esperado: A transação de crédito deve ser processada corretamente, com o valor adequado sendo debitado da conta, retornando o status 201 Created.
+>>
+>> Descrição: Esse teste cobre o caso em que uma transação com pagamento via crédito ("C") é realizada em uma conta válida e com saldo suficiente.
+>
+>> `test_success_transaction_pix`
+>>
+>> Objetivo: Validar a transação bem-sucedida com pagamento via PIX.
+>>
+>> Comportamento Esperado: A transação via PIX deve ser processada com sucesso, considerando o valor total do saldo da conta, e retornar o status 201 Created.
+>>
+>> Descrição: Este teste valida o caso em que uma transação PIX é realizada, com o valor da transação igual ao saldo total da conta.
+>
+>> `test_failed_transaction_due_invalid_fields`
+>> 
+>> Objetivo: Validar a falha na transação devido ao envio de campos inválidos ou incorretos.
+>>
+>> Comportamento Esperado: Quando campos inválidos são enviados na requisição (como um campo desconhecido ou valor inválido), a API deve retornar o status 422 Unprocessable Entity para cada caso de erro.
+>>
+>> Descrição: Este teste cobre diferentes cenários em que campos inválidos são passados na requisição, como:
+>>- Um campo inválido (RANDOM_FIELD).
+>>-  Forma de pagamento inválida.
+>>-  Valor da transação negativo.
+> 
+>> `test_failed_transaction_due_to_insufficient_balance`
+>>
+>> Objetivo: Validar a falha na transação devido a saldo insuficiente na conta.
+>>
+>> Comportamento Esperado: Quando o valor da transação for superior ao saldo disponível na conta, a API deve retornar o status 404 Not Found, indicando que a transação não pode ser processada.
+>>
+>> Descrição: Este teste cobre o cenário onde o saldo da conta não é suficiente para realizar a transação solicitada. Ele testa a falha para cada tipo de transação disponível ("D", "C", "P"), utilizando taxas e valores acima do saldo disponível.
+
+
+## Exemplo do resultado esperado
+![Print da execução dos testes](./result.png)

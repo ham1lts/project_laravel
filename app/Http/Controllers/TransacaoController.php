@@ -1,17 +1,24 @@
 <?php
+/**
+ * Copyright © Freire H. All rights reserved.
+ */
+
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
-use Illuminate\Http\Request;
+use App\Http\Requests\TransacaoRequest;
+use App\Services\TransacaoService;
+use Symfony\Component\HttpFoundation\Response;
 
 class TransacaoController extends Controller
 {
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Account $account)
+    public function __construct(
+        private readonly TransacaoService $transacaoService,
+    ){}
+
+    public function update(TransacaoRequest $transacaoRequest): Response
     {
-        //
+        return $this->transacaoService->updateBalance($transacaoRequest);
     }
 }
